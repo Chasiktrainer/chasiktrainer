@@ -3,55 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажёр "Часики"</title>
+    <title>Часики - Интерактивный Тренажёр</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-red: #e74c3c;
+            --accent-blue: #3498db;
+            --background: #f8f9fa;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f8ff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            color: var(--primary-color);
         }
 
-        .content-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
+        .container {
+            max-width: 800px;
             width: 100%;
+            padding: 20px;
         }
 
-        .clock {
+        .clock-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clock-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-blue) 100%);
+        }
+
+        .clock-wrapper {
+            position: relative;
             width: 250px;
             height: 250px;
-            border: 8px solid #2c3e50;
-            border-radius: 50%;
-            position: relative;
-            margin: 15px;
-            background: #fff;
-            touch-action: none;
+            margin: 0 auto;
         }
 
         .clock-face {
-            position: absolute;
             width: 100%;
             height: 100%;
-        }
-
-        .clock-number {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transform-origin: center;
-            left: calc(50% - 15px);
-            top: calc(50% - 15px);
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            position: relative;
+            background: #fff;
         }
 
         .hand {
@@ -59,236 +71,265 @@
             bottom: 50%;
             left: 50%;
             transform-origin: 50% 100%;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
         .hour-hand {
-            width: 5px;
+            width: 6px;
             height: 60px;
-            background: #e74c3c;
-            border-radius: 3px;
+            background: var(--accent-red);
+            border-radius: 4px 4px 0 0;
             z-index: 2;
+            transform: rotate(90deg);
         }
 
         .minute-hand {
-            width: 3px;
+            width: 4px;
             height: 80px;
-            background: #3498db;
-            border-radius: 2px;
+            background: var(--accent-blue);
+            border-radius: 3px 3px 0 0;
             z-index: 3;
+            transform: rotate(0deg);
         }
 
-        .task-container {
+        .center-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .task-card {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 15px;
-            width: 300px;
-            text-align: center;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .task-header {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-header svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         button {
-            padding: 12px 30px;
-            margin: 10px 0;
-            background: #2ecc71;
-            color: white;
+            padding: 12px 25px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
+            background: var(--accent-blue);
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            flex: 1;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
 
         input {
             padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #3498db;
+            border: 2px solid #dfe6e9;
             border-radius: 8px;
-            width: 120px;
-            text-align: center;
+            width: 100%;
             font-size: 16px;
+            transition: border-color 0.2s;
         }
 
-        .result-message {
-            margin-top: 10px;
-            font-weight: bold;
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .result-feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
         }
 
         .success {
-            animation: pulse 0.6s;
-            color: #2ecc71 !important;
+            background: #2ecc71;
+            color: white;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .error {
-            color: #e74c3c !important;
+            background: #e74c3c;
+            color: white;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         @media (max-width: 480px) {
-            .clock {
+            .clock-wrapper {
                 width: 200px;
                 height: 200px;
             }
-            
-            button, input {
-                width: 100%;
+
+            .hour-hand {
+                height: 50px;
+                width: 5px;
+            }
+
+            .minute-hand {
+                height: 70px;
+                width: 3px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Тренажёр "Часики" ⏰</h1>
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 30px;">⏰ Интерактивный тренажёр "Часики"</h1>
 
-    <!-- Первый блок: Установка времени -->
-    <div class="content-block">
-        <div class="clock" id="clock1">
-            <div class="clock-face">
-                <div class="clock-number" style="transform: rotate(0deg) translate(0, -90px) rotate(0deg)">12</div>
-                <div class="clock-number" style="transform: rotate(30deg) translate(0, -90px) rotate(-30deg)">1</div>
-                <div class="clock-number" style="transform: rotate(60deg) translate(0, -90px) rotate(-60deg)">2</div>
-                <div class="clock-number" style="transform: rotate(90deg) translate(0, -90px) rotate(-90deg)">3</div>
-                <div class="clock-number" style="transform: rotate(120deg) translate(0, -90px) rotate(-120deg)">4</div>
-                <div class="clock-number" style="transform: rotate(150deg) translate(0, -90px) rotate(-150deg)">5</div>
-                <div class="clock-number" style="transform: rotate(180deg) translate(0, -90px) rotate(-180deg)">6</div>
-                <div class="clock-number" style="transform: rotate(210deg) translate(0, -90px) rotate(-210deg)">7</div>
-                <div class="clock-number" style="transform: rotate(240deg) translate(0, -90px) rotate(-240deg)">8</div>
-                <div class="clock-number" style="transform: rotate(270deg) translate(0, -90px) rotate(-270deg)">9</div>
-                <div class="clock-number" style="transform: rotate(300deg) translate(0, -90px) rotate(-300deg)">10</div>
-                <div class="clock-number" style="transform: rotate(330deg) translate(0, -90px) rotate(-330deg)">11</div>
+        <!-- Задание 1 -->
+        <div class="clock-section">
+            <div class="clock-wrapper">
+                <div class="clock-face">
+                    <!-- Цифры циферблата -->
+                    <div class="center-dot"></div>
+                    <div id="hour-hand" class="hand hour-hand"></div>
+                    <div id="minute-hand" class="hand minute-hand"></div>
+                </div>
             </div>
-            <div id="hour-hand-1" class="hand hour-hand"></div>
-            <div id="minute-hand-1" class="hand minute-hand"></div>
-        </div>
-        <div class="task-container">
-            <h3>Задание 1: Установите время</h3>
-            <p id="target-time"></p>
-            <button onclick="checkTask1()">Проверить</button>
-            <div id="task1-result" class="result-message"></div>
-        </div>
-    </div>
 
-    <!-- Второй блок: Определение времени -->
-    <div class="content-block">
-        <div class="clock" id="clock2">
-            <div class="clock-face">
-                <div class="clock-number" style="transform: rotate(0deg) translate(0, -90px) rotate(0deg)">12</div>
-                <div class="clock-number" style="transform: rotate(30deg) translate(0, -90px) rotate(-30deg)">1</div>
-                <div class="clock-number" style="transform: rotate(60deg) translate(0, -90px) rotate(-60deg)">2</div>
-                <div class="clock-number" style="transform: rotate(90deg) translate(0, -90px) rotate(-90deg)">3</div>
-                <div class="clock-number" style="transform: rotate(120deg) translate(0, -90px) rotate(-120deg)">4</div>
-                <div class="clock-number" style="transform: rotate(150deg) translate(0, -90px) rotate(-150deg)">5</div>
-                <div class="clock-number" style="transform: rotate(180deg) translate(0, -90px) rotate(-180deg)">6</div>
-                <div class="clock-number" style="transform: rotate(210deg) translate(0, -90px) rotate(-210deg)">7</div>
-                <div class="clock-number" style="transform: rotate(240deg) translate(0, -90px) rotate(-240deg)">8</div>
-                <div class="clock-number" style="transform: rotate(270deg) translate(0, -90px) rotate(-270deg)">9</div>
-                <div class="clock-number" style="transform: rotate(300deg) translate(0, -90px) rotate(-300deg)">10</div>
-                <div class="clock-number" style="transform: rotate(330deg) translate(0, -90px) rotate(-330deg)">11</div>
+            <div class="task-card">
+                <div class="task-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Установите время</span>
+                </div>
+                <p id="target-time" style="font-size: 1.2em; margin: 15px 0;"></p>
+                <div class="controls">
+                    <button onclick="checkTime()">Проверить</button>
+                    <button onclick="generateNewTask()" style="background: #95a5a6;">Новое время</button>
+                </div>
+                <div id="task1-result" class="result-feedback"></div>
             </div>
-            <div id="hour-hand-2" class="hand hour-hand"></div>
-            <div id="minute-hand-2" class="hand minute-hand"></div>
         </div>
-        <div class="task-container">
-            <h3>Задание 2: Определите время</h3>
-            <input type="text" id="time-answer" placeholder="ЧЧ:ММ">
-            <button onclick="checkTask2()">Проверить</button>
-            <div id="task2-result" class="result-message"></div>
+
+        <!-- Задание 2 -->
+        <div class="clock-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Определите время</span>
+                </div>
+                <input type="text" id="time-input" placeholder="Введите время в формате ЧЧ:ММ">
+                <div class="controls" style="margin-top: 15px;">
+                    <button onclick="checkInput()">Проверить ответ</button>
+                </div>
+                <div id="task2-result" class="result-feedback"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        let targetHours, targetMinutes;
-        let currentClock2Time = {h: 0, m: 0};
+        let targetHours = 3; // Начальное положение часовой стрелки
+        let targetMinutes = 0; // Начальное положение минутной стрелки
+        let currentRotation = { hour: 90, minute: 0 };
+        let isDragging = false;
         let activeHand = null;
 
+        const hourHand = document.getElementById('hour-hand');
+        const minuteHand = document.getElementById('minute-hand');
+
         function init() {
-            setupClock1();
-            setupClock2();
+            setupClock();
             generateNewTask();
         }
 
-        function setupClock1() {
-            const clock = document.getElementById('clock1');
-            const hourHand = document.getElementById('hour-hand-1');
-            const minuteHand = document.getElementById('minute-hand-1');
-            setupDragHandlers(clock, hourHand, minuteHand);
-        }
-
-        function setupClock2() {
-            const hourHand = document.getElementById('hour-hand-2');
-            const minuteHand = document.getElementById('minute-hand-2');
-            currentClock2Time = {
-                h: Math.floor(Math.random() * 12),
-                m: Math.floor(Math.random() * 12) * 5
-            };
-            hourHand.style.transform = `rotate(${currentClock2Time.h * 30}deg)`;
-            minuteHand.style.transform = `rotate(${currentClock2Time.m * 6}deg)`;
-        }
-
-        function setupDragHandlers(clock, hourHand, minuteHand) {
-            let isDragging = false;
-            const rect = clock.getBoundingClientRect();
-            const centerX = rect.left + rect.width/2;
-            const centerY = rect.top + rect.height/2;
-
-            clock.addEventListener('mousedown', startDrag);
+        function setupClock() {
+            const clock = document.querySelector('.clock-face');
+            
+            // Обработчики событий для мыши
+            hourHand.addEventListener('mousedown', startDrag);
+            minuteHand.addEventListener('mousedown', startDrag);
             document.addEventListener('mouseup', endDrag);
             document.addEventListener('mousemove', drag);
-            clock.addEventListener('touchstart', touchStart);
-            document.addEventListener('touchend', touchEnd);
-            document.addEventListener('touchmove', touchMove);
 
-            function startDrag(e) {
-                isDragging = true;
-                const clientY = e.clientY || e.touches[0].clientY;
-                activeHand = clientY < centerY ? minuteHand : hourHand;
-                e.preventDefault();
-            }
+            // Обработчики для касаний
+            hourHand.addEventListener('touchstart', touchStart);
+            minuteHand.addEventListener('touchstart', touchStart);
+            document.addEventListener('touchend', endDrag);
+            document.addEventListener('touchmove', touchDrag);
+        }
 
-            function touchStart(e) {
-                startDrag(e.touches[0]);
-            }
+        function startDrag(e) {
+            isDragging = true;
+            activeHand = e.target.closest('.hand');
+            activeHand.style.transition = 'none';
+            e.preventDefault();
+        }
 
-            function endDrag() {
-                isDragging = false;
+        function touchStart(e) {
+            startDrag(e.touches[0]);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            if (activeHand) {
+                activeHand.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
                 activeHand = null;
             }
+        }
 
-            function touchEnd() {
-                endDrag();
-            }
+        function drag(e) {
+            if (!isDragging || !activeHand) return;
+            handleMove(e.clientX, e.clientY);
+        }
 
-            function drag(e) {
-                if (!isDragging || !activeHand) return;
-                handleMove(e.clientX, e.clientY);
-            }
+        function touchDrag(e) {
+            if (!isDragging || !activeHand) return;
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
 
-            function touchMove(e) {
-                if (!isDragging || !activeHand) return;
-                handleMove(e.touches[0].clientX, e.touches[0].clientY);
-            }
+        function handleMove(x, y) {
+            const rect = hourHand.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            const angle = Math.atan2(y - centerY, x - centerX);
+            const degrees = (angle * (180/Math.PI) + 90) % 360;
 
-            function handleMove(clientX, clientY) {
-                const angle = Math.atan2(clientY - centerY, clientX - centerX);
-                const degrees = (angle * (180/Math.PI) + 90) % 360;
-                
-                activeHand.style.transform = `rotate(${degrees}deg)`;
-                
-                if (activeHand === hourHand) {
-                    minuteHand.style.transform = `rotate(${degrees * 12}deg)`;
-                } else {
-                    hourHand.style.transform = `rotate(${degrees / 12}deg)`;
-                }
+            if (activeHand === hourHand) {
+                currentRotation.hour = degrees;
+                hourHand.style.transform = `rotate(${degrees}deg)`;
+            } else {
+                currentRotation.minute = degrees;
+                minuteHand.style.transform = `rotate(${degrees}deg)`;
             }
         }
 
@@ -296,59 +337,60 @@
             targetHours = Math.floor(Math.random() * 12);
             targetMinutes = Math.floor(Math.random() * 12) * 5;
             document.getElementById('target-time').textContent = 
-                `Установите: ${targetHours}:${targetMinutes.toString().padStart(2, '0')}`;
+                `Задано время: ${targetHours.toString().padStart(2, '0')}:${targetMinutes.toString().padStart(2, '0')}`;
         }
 
-        function checkTask1() {
-            const hourHand = document.getElementById('hour-hand-1');
-            const minuteHand = document.getElementById('minute-hand-1');
+        function checkTime() {
+            const hourDegrees = currentRotation.hour;
+            const minuteDegrees = currentRotation.minute;
+            
+            const currentHours = Math.round(hourDegrees / 30 % 12);
+            const currentMinutes = Math.round(minuteDegrees / 6 % 60);
+
             const result = document.getElementById('task1-result');
             
-            const currentHours = Math.round(getRotation(hourHand) / 30 % 12);
-            const currentMinutes = Math.round(getRotation(minuteHand) / 6 % 60);
-
             if (currentHours === targetHours && currentMinutes === targetMinutes) {
-                result.textContent = "✓ Правильно!";
-                result.className = "result-message success";
-                setTimeout(() => {
-                    result.textContent = "";
-                    generateNewTask();
-                }, 1000);
+                result.textContent = "✓ Верно! Отличная работа!";
+                result.className = "result-feedback success";
             } else {
                 result.textContent = "✗ Попробуйте ещё раз";
-                result.className = "result-message error";
+                result.className = "result-feedback error";
             }
+            
+            setTimeout(() => {
+                result.className = "result-feedback";
+            }, 2000);
         }
 
-        function checkTask2() {
-            const input = document.getElementById('time-answer');
+        function checkInput() {
+            const input = document.getElementById('time-input');
             const result = document.getElementById('task2-result');
+            
+            const hourDegrees = currentRotation.hour;
+            const minuteDegrees = currentRotation.minute;
+            
+            const correctHours = Math.round(hourDegrees / 30 % 12);
+            const correctMinutes = Math.round(minuteDegrees / 6 % 60);
+            
             const [hours, minutes] = input.value.split(':').map(Number);
 
-            if (hours === currentClock2Time.h && minutes === currentClock2Time.m) {
-                result.textContent = "✓ Правильно!";
-                result.className = "result-message success";
-                setTimeout(() => {
-                    input.value = '';
-                    result.textContent = "";
-                    setupClock2();
-                }, 1000);
+            if (hours === correctHours && minutes === correctMinutes) {
+                result.textContent = "✓ Правильно! Время: " + 
+                    `${correctHours}:${correctMinutes.toString().padStart(2, '0')}`;
+                result.className = "result-feedback success";
+                input.value = '';
             } else {
-                result.textContent = "✗ Неверно, попробуйте снова";
-                result.className = "result-message error";
+                result.textContent = "✗ Неверно. Правильное время: " + 
+                    `${correctHours}:${correctMinutes.toString().padStart(2, '0')}`;
+                result.className = "result-feedback error";
             }
+            
+            setTimeout(() => {
+                result.className = "result-feedback";
+            }, 3000);
         }
 
-        function getRotation(element) {
-            const transform = window.getComputedStyle(element).transform;
-            const matrix = transform.match(/matrix\(([^)]+)\)/);
-            if (matrix) {
-                const values = matrix[1].split(', ');
-                return Math.round(Math.atan2(parseFloat(values[1]), parseFloat(values[0])) * (180/Math.PI));
-            }
-            return 0;
-        }
-
+        // Инициализация
         init();
     </script>
 </body>
