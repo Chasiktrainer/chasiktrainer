@@ -283,7 +283,7 @@
 
             function handleMove(clientX, clientY) {
                 const angle = Math.atan2(clientY - centerY, clientX - centerX);
-                const degrees = (angle * (180/Math.PI) + 90;
+                const degrees = (angle * (180/Math.PI) + 90);
                 
                 activeHand.style.transform = `rotate(${degrees}deg)`;
                 
