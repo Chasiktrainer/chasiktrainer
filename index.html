@@ -1,233 +1,255 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
- <meta charset="UTF-8">
- <title>&#1058;&#1088;&#1077;&#1085;&#1072;&#1078;&#1105;&#1088; "&#1063;&#1072;&#1089;&#1080;&#1082;"</title>
- <style>
- /* &#1054;&#1089;&#1085;&#1086;&#1074;&#1085;&#1099;&#1077; &#1089;&#1090;&#1080;&#1083;&#1080; */
- body {
- font-family: Arial, sans-serif;
- background: #f0f8ff;
- display: flex;
- flex-direction: column;
- align-items: center;
- min-height: 100vh;
- margin: 0;
- padding: 20px;
- }
+    <meta charset="UTF-8">
+    <title>Тренажёр "Часик"</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f8ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
 
- /* &#1050;&#1086;&#1085;&#1090;&#1077;&#1081;&#1085;&#1077;&#1088; &#1095;&#1072;&#1089;&#1086;&#1074; */
- .clock {
- width: 300px;
- height: 300px;
- border: 10px solid #2c3e50;
- border-radius: 50%;
- position: relative;
- margin: 20px;
- background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%232c3e50" stroke-width="1"/><text x="50" y="15" font-size="8" text-anchor="middle">12</text><text x="85" y="53" font-size="8" text-anchor="middle">3</text><text x="50" y="90" font-size="8" text-anchor="middle">6</text><text x="15" y="53" font-size="8" text-anchor="middle">9</text></svg>') no-repeat center;
- }
+        .clock-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
- /* &#1057;&#1090;&#1088;&#1077;&#1083;&#1082;&#1080; */
- .hand {
- position: absolute;
- bottom: 50%;
- left: 50%;
- transform-origin: 50% 100%;
- transition: transform 0.3s ease;
- }
+        .clock {
+            width: 250px;
+            height: 250px;
+            border: 8px solid #2c3e50;
+            border-radius: 50%;
+            position: relative;
+            margin: 20px;
+            background: #fff;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><% for(let i=0; i<12; i++) { %><text x="<%= 50 + 40*Math.cos(-Math.PI/2 + 2*Math.PI*i/12) %>" y="<%= 50 + 40*Math.sin(-Math.PI/2 + 2*Math.PI*i/12) %>" font-size="8" text-anchor="middle" fill="%232c3e50"><%= i==0 ? 12 : i %></text><% } %></svg>');
+        }
 
- #hour-hand {
- width: 4px;
- height: 70px;
- background: #e74c3c;
- border-radius: 2px;
- z-index: 2;
- }
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: 50% 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
- #minute-hand {
- width: 3px;
- height: 90px;
- background: #3498db;
- border-radius: 2px;
- z-index: 3;
- }
+        .hour-hand {
+            width: 5px;
+            height: 60px;
+            background: #e74c3c;
+            border-radius: 3px;
+            z-index: 2;
+        }
 
- /* &#1047;&#1072;&#1076;&#1072;&#1085;&#1080;&#1103; */
- .task {
- background: white;
- padding: 20px;
- border-radius: 10px;
- box-shadow: 0 4px 6px rgba(0,0,0,0.1);
- margin: 15px;
- width: 300px;
- }
+        .minute-hand {
+            width: 3px;
+            height: 80px;
+            background: #3498db;
+            border-radius: 2px;
+            z-index: 3;
+        }
 
- button {
- padding: 10px 20px;
- margin: 10px 0;
- background: #2ecc71;
- color: white;
- border: none;
- border-radius: 5px;
- cursor: pointer;
- transition: background 0.3s;
- }
+        .task-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 15px;
+            width: 300px;
+        }
 
- button:hover {
- background: #27ae60;
- }
+        button {
+            padding: 10px 25px;
+            margin: 10px 0;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
- input {
- padding: 8px;
- margin: 5px 0;
- border: 2px solid #3498db;
- border-radius: 4px;
- }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
 
- /* &#1040;&#1085;&#1080;&#1084;&#1072;&#1094;&#1080;&#1080; */
- @keyframes correct {
- 0% { transform: scale(1); }
- 50% { transform: scale(1.1); }
- 100% { transform: scale(1); }
- }
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            width: 100px;
+            text-align: center;
+            font-size: 16px;
+        }
 
- .correct {
- animation: correct 0.6s;
- }
- </style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .success {
+            animation: pulse 0.6s;
+            background: #2ecc71 !important;
+        }
+    </style>
 </head>
 <body>
- <h1>&#1058;&#1088;&#1077;&#1085;&#1072;&#1078;&#1105;&#1088; "&#1063;&#1072;&#1089;&#1080;&#1082;" &#9200;</h1>
- 
- <div class="clock">
- <div id="hour-hand" class="hand"></div>
- <div id="minute-hand" class="hand"></div>
- </div>
+    <h1>Тренажёр "Часик" ⏰</h1>
+    
+    <div class="clock-container">
+        <!-- Первый циферблат -->
+        <div class="clock" id="clock1">
+            <div id="hour-hand-1" class="hand hour-hand"></div>
+            <div id="minute-hand-1" class="hand minute-hand"></div>
+        </div>
 
- <div class="task">
- <h3>&#1047;&#1072;&#1076;&#1072;&#1085;&#1080;&#1077; 1: &#1059;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1080;&#1090;&#1077; &#1074;&#1088;&#1077;&#1084;&#1103;</h3>
- <p id="target-time"></p>
- <button onclick="checkPosition()">&#1055;&#1088;&#1086;&#1074;&#1077;&#1088;&#1080;&#1090;&#1100;</button>
- </div>
+        <!-- Второй циферблат -->
+        <div class="clock" id="clock2">
+            <div id="hour-hand-2" class="hand hour-hand"></div>
+            <div id="minute-hand-2" class="hand minute-hand"></div>
+        </div>
+    </div>
 
- <div class="task">
- <h3>&#1047;&#1072;&#1076;&#1072;&#1085;&#1080;&#1077; 2: &#1042;&#1074;&#1077;&#1076;&#1080;&#1090;&#1077; &#1074;&#1088;&#1077;&#1084;&#1103;</h3>
- <input type="text" id="time-input" placeholder="&#1063;&#1063;:&#1052;&#1052;">
- <button onclick="checkInput()">&#1055;&#1088;&#1086;&#1074;&#1077;&#1088;&#1080;&#1090;&#1100;</button>
- </div>
+    <div class="task-container">
+        <h3>Задание 1: Установите время</h3>
+        <p id="target-time"></p>
+        <button onclick="checkTask1()">Проверить</button>
+    </div>
 
- <script>
- let targetHours = 0;
- let targetMinutes = 0;
- const hourHand = document.getElementById('hour-hand');
- const minuteHand = document.getElementById('minute-hand');
- let isDragging = false;
- let activeHand = null;
+    <div class="task-container">
+        <h3>Задание 2: Определите время</h3>
+        <input type="text" id="time-answer" placeholder="ЧЧ:ММ">
+        <button onclick="checkTask2()">Проверить</button>
+        <p id="task2-result"></p>
+    </div>
 
- // &#1048;&#1085;&#1080;&#1094;&#1080;&#1072;&#1083;&#1080;&#1079;&#1072;&#1094;&#1080;&#1103;
- function init() {
- generateNewTask();
- setupEventListeners();
- }
+    <script>
+        let targetHours, targetMinutes;
+        let currentClock2Time = {h: 0, m: 0};
 
- // &#1043;&#1077;&#1085;&#1077;&#1088;&#1072;&#1094;&#1080;&#1103; &#1085;&#1086;&#1074;&#1086;&#1075;&#1086; &#1079;&#1072;&#1076;&#1072;&#1085;&#1080;&#1103;
- function generateNewTask() {
- targetHours = Math.floor(Math.random() * 12);
- targetMinutes = Math.floor(Math.random() * 12) * 5;
- document.getElementById('target-time').textContent = 
- 
- &#1059;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1080;&#1090;&#1077;: ${targetHours}:${targetMinutes.toString().padStart(2, '0')};
+        function init() {
+            setupClock1();
+            setupClock2();
+            generateNewTask();
+        }
 
- }
+        function setupClock1() {
+            const clock = document.getElementById('clock1');
+            const hourHand = document.getElementById('hour-hand-1');
+            const minuteHand = document.getElementById('minute-hand-1');
+            setupDragHandlers(clock, hourHand, minuteHand);
+        }
 
- // &#1053;&#1072;&#1089;&#1090;&#1088;&#1086;&#1081;&#1082;&#1072; &#1086;&#1073;&#1088;&#1072;&#1073;&#1086;&#1090;&#1095;&#1080;&#1082;&#1086;&#1074; &#1089;&#1086;&#1073;&#1099;&#1090;&#1080;&#1081;function setupEventListeners() {
- const clock = document.querySelector('.clock');
+        function setupClock2() {
+            const hourHand = document.getElementById('hour-hand-2');
+            const minuteHand = document.getElementById('minute-hand-2');
+            currentClock2Time = {
+                h: Math.floor(Math.random() * 12),
+                m: Math.floor(Math.random() * 12) * 5
+            };
+            hourHand.style.transform = `rotate(${currentClock2Time.h * 30}deg)`;
+            minuteHand.style.transform = `rotate(${currentClock2Time.m * 6}deg)`;
+        }
 
-clock.addEventListener('mousedown', (e) => {
-isDragging = true;
-const rect = clock.getBoundingClientRect();
-const centerY = rect.top + rect.height/2;
-activeHand = e.clientY < centerY ? minuteHand : hourHand;
-});
+        function setupDragHandlers(clock, hourHand, minuteHand) {
+            let isDragging = false;
+            let activeHand = null;
 
-document.addEventListener('mouseup', () => {
-isDragging = false;
-activeHand = null;
-});
+            clock.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                const rect = clock.getBoundingClientRect();
+                activeHand = e.clientY < rect.top + rect.height/2 ? minuteHand : hourHand;
+            });
 
-document.addEventListener('mousemove', (e) => {
-if (!isDragging || !activeHand) return;
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                activeHand = null;
+            });
 
-const rect = clock.getBoundingClientRect();
-const centerX = rect.left + rect.width/2;
-const centerY = rect.top + rect.height/2;
-const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-const degrees = (angle * (180/Math.PI) + 90) % 360;
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging || !activeHand) return;
 
-activeHand.style.transform =
-rotate(${degrees}deg);
+                const rect = clock.getBoundingClientRect();
+                const centerX = rect.left + rect.width/2;
+                const centerY = rect.top + rect.height/2;
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+                const degrees = (angle * (180/Math.PI) + 90) % 360;
 
+                activeHand.style.transform = `rotate(${degrees}deg)`;
+                
+                if (activeHand === hourHand) {
+                    minuteHand.style.transform = `rotate(${degrees * 12}deg)`;
+                } else {
+                    hourHand.style.transform = `rotate(${degrees / 12}deg)`;
+                }
+            });
+        }
 
-// &#1057;&#1080;&#1085;&#1093;&#1088;&#1086;&#1085;&#1080;&#1079;&#1072;&#1094;&#1080;&#1103; &#1089;&#1090;&#1088;&#1077;&#1083;&#1086;&#1082;
-if (activeHand === hourHand) {
-minuteHand.style.transform =
-rotate(${degrees * 12}deg);
+        function generateNewTask() {
+            targetHours = Math.floor(Math.random() * 12);
+            targetMinutes = Math.floor(Math.random() * 12) * 5;
+            document.getElementById('target-time').textContent = 
+                `Установите: ${targetHours}:${targetMinutes.toString().padStart(2, '0')}`;
+        }
 
-} else {
-hourHand.style.transform =
-rotate(${degrees / 12}deg);
+        function checkTask1() {
+            const hourHand = document.getElementById('hour-hand-1');
+            const minuteHand = document.getElementById('minute-hand-1');
+            
+            const currentHours = Math.round(getRotation(hourHand) / 30 % 12);
+            const currentMinutes = Math.round(getRotation(minuteHand) / 6 % 60);
 
-}
-});
-}
+            if (currentHours === targetHours && currentMinutes === targetMinutes) {
+                document.querySelector('#clock1').classList.add('success');
+                setTimeout(() => {
+                    document.querySelector('#clock1').classList.remove('success');
+                    generateNewTask();
+                }, 600);
+            }
+        }
 
-// &#1055;&#1088;&#1086;&#1074;&#1077;&#1088;&#1082;&#1072; &#1087;&#1086;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1103; &#1089;&#1090;&#1088;&#1077;&#1083;&#1086;&#1082;
-function checkPosition() {
-const hourDegrees = getRotationAngle(hourHand);
-const minuteDegrees = getRotationAngle(minuteHand);
+        function checkTask2() {
+            const input = document.getElementById('time-answer');
+            const result = document.getElementById('task2-result');
+            const [hours, minutes] = input.value.split(':').map(Number);
 
-const currentHours = Math.round((hourDegrees / 30) % 12);
-const currentMinutes = Math.round((minuteDegrees / 6) % 60);
+            if (hours === currentClock2Time.h && minutes === currentClock2Time.m) {
+                result.textContent = "Правильно! ✔️";
+                result.style.color = "#2ecc71";
+                input.classList.add('success');
+                setTimeout(() => {
+                    input.classList.remove('success');
+                    setupClock2();
+                    input.value = '';
+                    result.textContent = '';
+                }, 1000);
+            } else {
+                result.textContent = "Попробуйте ещё раз ❌";
+                result.style.color = "#e74c3c";
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            }
+        }
 
-if (currentHours === targetHours && currentMinutes === targetMinutes) {
-document.querySelector('.task').classList.add('correct');
-setTimeout(() => {
-document.querySelector('.task').classList.remove('correct');
-generateNewTask();
-}, 600);
-}
-}
+        function getRotation(element) {
+            const transform = window.getComputedStyle(element).transform;
+            const matrix = transform.match(/^matrix\((.+)\)$/);
+            return matrix ? Math.round(Math.atan2(matrix[1].split(', ')[1], 
+                            matrix[1].split(', ')[0]) * (180/Math.PI)) : 0;
+        }
 
-// &#1055;&#1088;&#1086;&#1074;&#1077;&#1088;&#1082;&#1072; &#1074;&#1074;&#1077;&#1076;&#1077;&#1085;&#1085;&#1086;&#1075;&#1086; &#1074;&#1088;&#1077;&#1084;&#1077;&#1085;&#1080;
-function checkInput() {
-const input = document.getElementById('time-input');
-const [hours, minutes] = input.value.split(':').map(Number);
-
-const hourDegrees = getRotationAngle(hourHand);
-const currentHours = Math.round((hourDegrees / 30) % 12);
-const currentMinutes = Math.round((hourDegrees * 12 / 6) % 60);
-
-if (hours === currentHours && minutes === currentMinutes) {
-input.style.borderColor = '#2ecc71';
-setTimeout(() => {
-input.style.borderColor = '#3498db';
-input.value = '';
-}, 1000);
-} else {
-input.style.borderColor = '#e74c3c';
-setTimeout(() => input.style.borderColor = '#3498db', 1000);
-}
-}
-
-// &#1055;&#1086;&#1083;&#1091;&#1095;&#1077;&#1085;&#1080;&#1077; &#1091;&#1075;&#1083;&#1072; &#1087;&#1086;&#1074;&#1086;&#1088;&#1086;&#1090;&#1072;
-function getRotationAngle(element) {
-const transform = window.getComputedStyle(element).transform;
-const matrix = transform.match(/^matrix\((.+)\)$/);
-return matrix ? Math.round(Math.atan2(matrix[1].split(', ')[1], matrix[1].split(', ')[0]) * (180/Math.PI)) : 0;
-}
-
-// &#1047;&#1072;&#1087;&#1091;&#1089;&#1082;
-init();
-</script>
+        init();
+    </script>
 </body>
 </html>
